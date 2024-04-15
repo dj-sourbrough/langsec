@@ -1,0 +1,55 @@
+node $TROUPE/rt/src/p2p/mkid.ts --outfile=id-server.json
+
+
+import declassifyutil
+
+let fun bob () =
+   let fun sendProfile() =
+      let val trustLevel = `{bob}`
+         val ownName = "bob" raisedTo trustLevel
+         val ownYear = 2000 raisedTo trustLevel
+         val ownGender = true raisedTo trustLevel
+         val ownInterests = ["Height", "Inteligence"] raisedTo trustLevel
+         val ownProfile = (trustLevel, ownName, ownYear, ownGender, ownInterests)
+         val pid = self ()
+         fun agentAcceptAll _ = (true, ownProfile)
+         fun agentRejectAll _ = (false, ())
+         
+         fun agentHetero (lev, name, year, gender, interests) =
+            (*let val authMatch = attenuate (authority, trustLevel)*)
+            let val declassProfile = declassifydeep(ownProfile, authority, lev)
+         
+            val declassOwnGender = declassify(ownGender, authority, lev)
+            val match = if gender andalso declassOwnGender then (false, ())
+                           else (true raisedTo lev, declassProfile)
+            in match
+            end
+         
+         val message = ("NEWPROFILE", (ownProfile, agentHetero, pid))
+
+         val datingServer = whereis ("QmSC4Z8K56hLM6n27JhwfyX4K3je8eijaoX5ztmKdNLEc9", "datingServer")
+
+         val _ = print "CLIENT SENDED"
+
+         (* Now we receive the match from the server *)
+         (*val _ = receive [hn ("NEWMATCH", match1)
+                            => printWithLabels match1
+                        ]
+         *)
+
+      in send (datingServer, message)
+      end
+
+   in receiveMatch ()
+   end
+
+   fun receiveMatch() =
+      let val (preference, matchedProfile) = receive [hn ("NEWMATCH", data)
+         => data
+      ]
+      val _ = printWithLabels matchedProfile
+      
+   in sendProfile ()
+   end
+in bob ()
+end

@@ -1,10 +1,7 @@
-node $TROUPE/rt/src/p2p/mkid.ts --outfile=id-server.json
-
-
 import declassifyutil
 
 let fun bob () =
-   let fun sendProfile() =
+   let fun sendProfile () =
       let val trustLevel = `{bob}`
          val ownName = "bob" raisedTo trustLevel
          val ownYear = 2000 raisedTo trustLevel
@@ -31,16 +28,10 @@ let fun bob () =
 
          val _ = print "CLIENT SENDED"
 
-         (* Now we receive the match from the server *)
-         (*val _ = receive [hn ("NEWMATCH", match1)
-                            => printWithLabels match1
-                        ]
-         *)
-
       in send (datingServer, message)
       end
 
-   in receiveMatch ()
+   in sendProfile()
    end
 
    fun receiveMatch() =
@@ -49,7 +40,7 @@ let fun bob () =
       ]
       val _ = printWithLabels matchedProfile
       
-   in sendProfile ()
+   in ()
    end
 in bob ()
 end

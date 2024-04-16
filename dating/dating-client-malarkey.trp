@@ -1,17 +1,17 @@
 let 
     fun malarkey () =
+        let val trustLevel = `{malarkey}`
+        let 
+            
+            
 
 
-    fun sendProfile (server, pid) =
+    fun main () =
+        let val thisNode = node (self ())
+            val _ = printString ("Running client node with indentifier:" ^ thisNode)
+            val _ = register ("malarkey", spawn malarkey, authority)
         in ()
         end
 
-        fun receiveMatch () = 
-        in ()
-        end
-fun main () =
-
-
-
-in main()
+in main ()
 end

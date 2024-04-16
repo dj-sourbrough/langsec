@@ -1,36 +1,50 @@
 import lists
+import declassifyutil
+
 let 
-    fun sendProfile (pid,profile) = 
-        let
-            val _ = print profile
+    fun getProfileLevel (lev, _, _, _, _) = lev
+    fun getProfileName (_, name, _, _, _) = name
+
+    fun sendProfile (pid,profile) =
+        let val _ = printString "sending match"
+            val _ = printWithLabels profile
+            val _ = send(pid, ("NEWMATCH", profile))
         in ()
         end
     
     fun matchProfiles (p1, a1, pid1, p2, a2, pid2) =
         let
-            val a = let pini authority
-                    val (match1, p2ForP1) = a1 p2
-                    val (match2, p1ForP2) = a2 p1
-                    val _ = if match1 andalso match2
-                            then map (fn (x,y) => sendProfile (x,y)) [
-                                                                        (pid1, p2ForP1),
-                                                                        (pid2, p1ForP2)
-                                                                    ]
-                            else ()
-                    in a
-                    end
-        in ()
+            val tmp = pinipush authority
+
+            val (match1, p1ForP2) = a1 p2
+            val (match2, p2ForP1) = a2 p1
+
+            val _ = pinipop tmp
+
+            val _ = if declassify_with_block(match1 andalso match2, authority, `{}`)
+                    then map 
+                        (fn (x,y) => sendProfile(x,y))
+                        [
+                            (pid1, p2ForP1),
+                            (pid2, p1ForP2)
+                        ]
+                    else ()
+
+            val _ = printString "postmatch"
+            val _ = debugpc()
+        in () 
         end
-        
 
     fun server profiles =
         let
             val (p, a, pid) = receive [hn ("NEWPROFILE", data)
                                 => data
                             ]
-            
+            val _ = print "new profile"
+            val _ = printWithLabels p
             val _ = map ( fn (p2, a2, pid2) => 
-                            matchProfiles(p, a, pid, p2, a2, pid2)) profiles
+                            matchProfiles(p, a, pid, p2, a2, pid2)
+                        ) profiles
                 
             val newProfiles = append profiles [(p, a, pid)]
         in server newProfiles

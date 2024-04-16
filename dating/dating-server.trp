@@ -2,9 +2,6 @@ import lists
 import declassifyutil
 
 let 
-    fun getProfileLevel (lev, _, _, _, _) = lev
-    fun getProfileName (_, name, _, _, _) = name
-
     fun sendProfile (pid,profile) =
         let val _ = printString "sending match"
             val _ = printWithLabels profile
@@ -14,24 +11,16 @@ let
     
     fun matchProfiles (p1, a1, pid1, p2, a2, pid2) =
         let
-            val tmp = pinipush authority
-
             val (match1, p1ForP2) = a1 p2
             val (match2, p2ForP1) = a2 p1
-
-            val _ = pinipop tmp
-
             val _ = if declassify_with_block(match1 andalso match2, authority, `{}`)
                     then map 
-                        (fn (x,y) => sendProfile(x,y))
+                        (fn (pid,profile) => sendProfile(pid,profile))
                         [
                             (pid1, p2ForP1),
                             (pid2, p1ForP2)
                         ]
                     else ()
-
-            val _ = printString "postmatch"
-            val _ = debugpc()
         in () 
         end
 
@@ -45,7 +34,6 @@ let
             val _ = map ( fn (p2, a2, pid2) => 
                             matchProfiles(p, a, pid, p2, a2, pid2)
                         ) profiles
-                
             val newProfiles = append profiles [(p, a, pid)]
         in server newProfiles
         end

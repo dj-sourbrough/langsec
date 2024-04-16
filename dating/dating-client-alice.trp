@@ -1,46 +1,41 @@
 import declassifyutil
+import lists
 
-let fun client () =
-   let fun alice () =
-      let val trustLevel = `{alice}`
-         val ownName = "Alice" raisedTo trustLevel
-         val ownYear = 1900 raisedTo trustLevel
-         val ownGender = false raisedTo trustLevel
-         val ownInterests = ["Cheese", "Wine"] raisedTo trustLevel
-         val ownProfile = (trustLevel, ownName, ownYear, ownGender, ownInterests)
-         val pid = self ()
-         fun agentAcceptAll _ = (true, ownProfile)
-         fun agentRejectAll _ = (false, ())
+let 
+    val pid = self()
+    val myLev = `{alice}`
+    val myName = "Alice" raisedTo myLev
+    val myYear = 2100 raisedTo myLev
+    val myGender = true raisedTo myLev
+    val myInterests = ["dragons", "wars", "fire"] raisedTo myLev
+    val myProfile = (myLev, myName, myYear, myGender, myInterests)
+    
+    fun agent (lev, name, year, gender, interests) = 
+        let val youngerThanMe = if declassify_with_block(myYear < year, authority, lev) then true else false
+            val man = if gender then false else true 
+            val likesWinter = if elem "winter" interests then true else false
+            val isDanaerys = if name = "Daenerys" then true else false
+            val match = if youngerThanMe andalso (man orelse likesWinter) orelse isDanaerys
+                        then (true raisedTo lev, declassifydeep(myProfile, authority, lev))
+                        else (false raisedTo lev, ())
+        in match
+        end
+    
+    fun loop matches =
+        let
+            val match = receive [ hn ("NEWMATCH", data) => data]
+            val _ = print match
+            val allMatches = append matches [match]
+        in loop allMatches
+        end
 
-         fun agentHetero (lev, name, year, gender, interests) =
-            (*let val authMatch = attenuate (authority, trustLevel)*)
-            let val declassProfile = declassifydeep(ownProfile, authority, lev)
-         
-            (*val _ = printWithLabels declassProfile*)
-            val declassOwnGender = declassify(ownGender, authority, lev)
-            val match = if gender andalso declassOwnGender then (false, ())
-                           else (true raisedTo lev, declassProfile)
-            in match
-            end
+    fun main () =
+        let
+            val message = ("NEWPROFILE", (myProfile, agent, pid))
+            val datingServer = whereis ("QmSC4Z8K56hLM6n27JhwfyX4K3je8eijaoX5ztmKdNLEc9", "datingServer")
+            val _ = send(datingServer, message)
+        in loop []
+        end
 
-      
-         val message = ("NEWPROFILE", (ownProfile, agentHetero, pid))
-
-         val datingServer = whereis ("QmSC4Z8K56hLM6n27JhwfyX4K3je8eijaoX5ztmKdNLEc9", "datingServer")
-
-         val _ = print "CLIENT SENDED"
-
-         (* Now we receive the match from the server *)
-         (*val _ = receive [hn ("NEWMATCH", match2)
-                            => printWithLabels match2
-                        ]
-         *)
-
-      in send (datingServer, message)
-      end
-
-   in alice ()
-   end
-
-in client ()   
+in main ()
 end

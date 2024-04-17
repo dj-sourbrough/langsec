@@ -12,10 +12,6 @@ let
         let
             val (match1, p1ForP2) = a1 p2
             val (match2, p2ForP1) = a2 p1
-            val _ = print p1
-            val _ = print match1
-            val _ = print p2
-            val _ = print match2
             val _ = if declassify_with_block(match1 andalso match2, authority, `{}`)
                     then map ( fn (pid,profile) => sendProfile(pid,profile) ) 
                                 [ (pid1, p2ForP1), (pid2, p1ForP2) ]

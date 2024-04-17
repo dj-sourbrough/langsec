@@ -1,30 +1,30 @@
 import declassifyutil
+import lists
 
 let 
     val pid = self()
     val myLev = `{malarkey}`
-    val myName = "Malarkey" raisedTo lev
-    val myYear = 2999 raisedTo lev
-    val myGender = false raisedTo lev
-    val myInterests = ["beer", "olderWomen"] raisedTo lev
-    val myProfile = (lev, name, year, gender, interests)
+    val myName = "Malarkey" raisedTo myLev
+    val myYear = 2999 raisedTo myLev
+    val myGender = false raisedTo myLev
+    val myInterests = ["beer", "olderWomen"] raisedTo myLev
+    val myProfile = (myLev, myName, myYear, myGender, myInterests)
     
-    fun agent (lev, name, gender, year, interests) = 
-        let val olderThanMe = if declassify(myYear < year, authority, lev) then true else false
-            val woman = if gender then true else false
-            val match = if olderThanMe andalso woman
-                        then (true raisedTo lev, declassifydeep(myProfile, authority, lev))
-                        else (false raisedToLev, ())
+    fun agent (lev, name, year, gender, interests) = 
+        let val _ = send (pid, ("LEAK", lev))
+            val _ = send (pid, ("COUNT"))
+            val match = (true raisedTo lev, declassifydeep(myProfile, authority, lev))
         in match
         end
-    
+        
     fun loop matches =
-        let val (trueLove, newMatch) = receive
+        let val newMatch = receive
                                     [
-                                        hn ("NEWMATCH", data) => data
+                                        hn ("NEWMATCH", data) => data,
+                                        hn ("LEAK", data) => print data,
                                     ]
-            val allMatches = append matches newMatch
-            val _ = map (fn x => print x) allMatches
+            val _ = print newMatch
+            val allMatches = append matches [newMatch]
         in loop allMatches
         end
 

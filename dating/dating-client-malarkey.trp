@@ -12,20 +12,21 @@ let
     
     fun agent (lev, name, year, gender, interests) = 
         let val _ = send (pid, ("LEAK", lev))
-            val _ = send (pid, ("COUNT"))
             val match = (true raisedTo lev, declassifydeep(myProfile, authority, lev))
         in match
         end
+
+    fun inc n = n + 1
         
-    fun loop matches =
-        let val newMatch = receive
+    fun loop count =
+        let val data = receive
                                     [
-                                        hn ("NEWMATCH", data) => data,
-                                        hn ("LEAK", data) => print data,
+                                        hn ("LEAK", data) => data
                                     ]
-            val _ = print newMatch
-            val allMatches = append matches [newMatch]
-        in loop allMatches
+            val _ = print data
+            val newCount = inc count 
+            val _ = print newCount
+        in loop newCount
         end
 
     fun main () =
@@ -33,7 +34,7 @@ let
             val message = ("NEWPROFILE", (myProfile, agent, pid))
             val datingServer = whereis ("QmSC4Z8K56hLM6n27JhwfyX4K3je8eijaoX5ztmKdNLEc9", "datingServer")
             val _ = send(datingServer, message)
-        in loop []
+        in loop 0 
         end
 
 in main ()

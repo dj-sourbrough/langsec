@@ -32,6 +32,7 @@ function authenticate(req, username, password, done) {
               return \`${options.userAutoCreateTemplate}\`;
             })()`
             const newUser = JSON.parse(eval(wrapperFunction))
+            console.log(newUser)
             // Insert the new username into the database
             mongo.db.collection('users')
               .insertOne(newUser, (err, result) => {

@@ -250,6 +250,13 @@ router
   // POST route for profile picture upload
   .post('/upload', upload.single('avatar'), (req, res) => {
     // Validate file path
+
+      // Check if photo is correct file type
+      if (req.file.mimetype !== 'image/jpeg' && req.file.mimetype !== 'image/png') {
+        req.flash('error', 'File must be a .jpg or .png image.')
+        return res.redirect('back')
+      }
+
       // Move the file and rename it to the user's username
       fs.rename(req.file.path, req.file.destination + '/' + req.user.username, (err) => {
         if (err) throw err;

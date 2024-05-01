@@ -28,6 +28,7 @@ router
     // Validate the place license
     let licensePlate = req.body.licensePlate;
     let location = req.body.location;
+    // let location = trueLocations.getOrElse(location, false)
     let mintime = req.body.mintime;
 
     if(!location) {

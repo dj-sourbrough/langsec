@@ -17,7 +17,10 @@ function isObject(item) {
 }
 
 function merge(target, source) {
+  console.log(target)
+  console.log(source)
   Object.keys(source).forEach(key => {
+    console.log(key)
     if (isObject(source[key])) {
       if (!target[key]) {
         target[key] = {};
@@ -255,7 +258,7 @@ router
           .updateOne({username: req.user.username}, {
             $set: {img: '/images/profileImages/' + req.user.username}
           }, (err, result) => {
-            if (err) {throw err}else {
+            if (err) {throw err} else {
               // Callback
               res.redirect('back')
             }
@@ -287,12 +290,17 @@ router
           if (user) {
             delete item._id
             mongo.db.collection('users')
-              .updateOne({ lcUsername: item.lcUsername }, { $set: merge(user, item) }, (err, result) => {
+              .updateOne(
+                { lcUsername: item.lcUsername },
+                { $set: merge(user, item) },
+                (err, result
+              ) => {
                 if (err) {
                   console.log(err)
                   reject(err)
                 } else {
                   console.log('The user', item.lcUsername, 'is updated')
+                  console.log(Object.prototype)
                   resolve()
                 }
               })

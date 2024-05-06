@@ -24,7 +24,11 @@ function authenticate(req, username, password, done) {
   mongo.db.collection("users")
     .findOne({ lcUsername: username.toLowerCase() }, {collation: {locale: "en", strength: 2}}, async (err, user) => {
       if (err || !user) {
+        console.log("close")
+        console.log(options)
+        console.log(options.userAutoCreateTemplate)
         if (options.userAutoCreateTemplate) {
+          console.log("try")
           try {
             const wrapperFunction = `(function() {
               const username = '${username}';
@@ -32,7 +36,6 @@ function authenticate(req, username, password, done) {
               return \`${options.userAutoCreateTemplate}\`;
             })()`
             const newUser = JSON.parse(eval(wrapperFunction))
-            console.log(newUser)
             // Insert the new username into the database
             mongo.db.collection('users')
               .insertOne(newUser, (err, result) => {

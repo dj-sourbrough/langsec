@@ -38,6 +38,8 @@ router
     }
     let self = this;
     if(location) {
+      console.log("park.js")
+      console.log(location)
       locations.getLocationById(location, (e) => {
 
         if(e.length != 1) {

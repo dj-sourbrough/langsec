@@ -105,6 +105,7 @@ router
   // Search for threads/replies via search box on nav bar
   .get('/search', (req, res) => {
     var fuzzyQuery = new RegExp(req.query.query, 'gi')
+    console.log(req.query)
     mongo.db.collection('threads')
       .find({ $or: [{ body: fuzzyQuery }, { subject: fuzzyQuery }, { posterUsername: fuzzyQuery }] })
       .toArray((err, matchingThreads) => {

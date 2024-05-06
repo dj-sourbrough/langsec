@@ -1,1 +1,0 @@
-docker container rm lbs-services --force

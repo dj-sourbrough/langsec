@@ -1,0 +1,10 @@
+{
+    "type": "object",
+    "properties": {
+        "username": {"type": "string"},
+        "dob": {"type": "integer"},
+        "gender": {"type": "string"}
+    },
+    "required": ["name", "dob"],
+    "additionalProperties": false
+}

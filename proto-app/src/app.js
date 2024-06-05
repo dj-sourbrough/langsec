@@ -12,6 +12,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.set('view engine', 'ejs')
+Object.freeze(Object)
 
 // Temporary storage for users
 let users = [];
@@ -76,7 +77,6 @@ app.post('/register', (req, res) => {
     // Create a new user and save to the list
     users.push(newUser);
     res.send('User registered successfully');
-    console.log(users)
 });
 
 // DIRECT PROTOTYPE POLLUTION
